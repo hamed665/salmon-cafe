@@ -27,9 +27,10 @@ Salmon Cafe is positioned as a **Premium Smart Cafe Menu** for cafes that care a
 - Nginx reverse proxy
 - VPS self-host deployment
 
-## Quick Start
+## Local Start
 
 ```bash
+cp package.selfhost.json package.json
 npm install
 cp .env.example .env.local
 npm run dev
@@ -44,7 +45,7 @@ http://localhost:3000/dashboard
 http://localhost:3000/admin
 ```
 
-## Self-Host Docker Start
+## Docker Start
 
 ```bash
 cp .env.docker.example .env.docker
