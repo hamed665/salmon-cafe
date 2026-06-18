@@ -1,0 +1,324 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  PLATFORM_ADMIN
+  SUPPORT_ADMIN
+  CAFE_OWNER
+  CAFE_MANAGER
+  VIEWER
+}
+
+enum CafeStatus {
+  DRAFT
+  ACTIVE
+  DISABLED
+}
+
+enum SubscriptionStatus {
+  TRIAL
+  ACTIVE
+  PAST_DUE
+  EXPIRED
+  CANCELLED
+}
+
+model User {
+  id           String       @id @default(uuid())
+  fullName     String?
+  email        String       @unique
+  mobile       String?
+  passwordHash String?
+  role         UserRole     @default(CAFE_OWNER)
+  cafes        Cafe[]       @relation("CafeOwner")
+  memberships  CafeMember[]
+  payments     Payment[]
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+}
+
+model Cafe {
+  id            String         @id @default(uuid())
+  ownerId       String
+  owner         User           @relation("CafeOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  name          String
+  slug          String         @unique
+  description   String?
+  logoUrl       String?
+  coverUrl      String?
+  phone         String?
+  instagramUrl  String?
+  websiteUrl    String?
+  address       String?
+  city          String?
+  area          String?
+  status        CafeStatus     @default(DRAFT)
+  isPublished   Boolean        @default(false)
+  defaultLocale String         @default("fa-IR")
+  members       CafeMember[]
+  settings      CafeSettings?
+  categories    Category[]
+  products      Product[]
+  qrCodes       QrCode[]
+  events        AnalyticsEvent[]
+  subscriptions Subscription[]
+  payments      Payment[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+model CafeMember {
+  id        String   @id @default(uuid())
+  cafeId    String
+  userId    String
+  role      UserRole @default(CAFE_MANAGER)
+  status    String   @default("active")
+  cafe      Cafe     @relation(fields: [cafeId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([cafeId, userId])
+}
+
+model CafeSettings {
+  id                       String   @id @default(uuid())
+  cafeId                   String   @unique
+  cafe                     Cafe     @relation(fields: [cafeId], references: [id], onDelete: Cascade)
+  currency                 String   @default("IRT")
+  textDirection            String   @default("rtl")
+  showPrices               Boolean  @default(true)
+  showUnavailableProducts  Boolean  @default(true)
+  enableMoodMenu           Boolean  @default(true)
+  enableCoffeeStory        Boolean  @default(true)
+  enableRecommendations    Boolean  @default(true)
+  enableAnalytics          Boolean  @default(true)
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+}
+
+model Category {
+  id          String    @id @default(uuid())
+  cafeId      String
+  cafe        Cafe      @relation(fields: [cafeId], references: [id], onDelete: Cascade)
+  name        String
+  slug        String
+  description String?
+  sortOrder   Int       @default(0)
+  isActive    Boolean   @default(true)
+  products    Product[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([cafeId, slug])
+  @@index([cafeId, sortOrder])
+}
+
+model Product {
+  id                  String                  @id @default(uuid())
+  cafeId              String
+  categoryId          String?
+  cafe                Cafe                    @relation(fields: [cafeId], references: [id], onDelete: Cascade)
+  category            Category?               @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  name                String
+  slug                String
+  description         String?
+  price               Int                     @default(0)
+  discountPrice        Int?
+  imageUrl            String?
+  videoUrl            String?
+  isActive            Boolean                 @default(true)
+  isAvailable         Boolean                 @default(true)
+  isFeatured          Boolean                 @default(false)
+  isNew               Boolean                 @default(false)
+  isPopularManual     Boolean                 @default(false)
+  sortOrder           Int                     @default(0)
+  profile             ProductProfile?
+  story               ProductStory?
+  moods               ProductMood[]
+  recommendations     ProductRecommendation[] @relation("ProductRecommendations")
+  recommendedBy       ProductRecommendation[] @relation("RecommendedProducts")
+  events              AnalyticsEvent[]
+  createdAt           DateTime                @default(now())
+  updatedAt           DateTime                @updatedAt
+
+  @@unique([cafeId, slug])
+  @@index([cafeId, categoryId])
+  @@index([cafeId, isActive, isAvailable])
+}
+
+model ProductProfile {
+  id                 String   @id @default(uuid())
+  productId           String   @unique
+  product             Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  sweetnessLevel      Int      @default(0)
+  bitternessLevel     Int      @default(0)
+  caffeineLevel       Int      @default(0)
+  temperatureType     String   @default("hot")
+  servingTemperature  String?
+  calories            Int?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+model ProductStory {
+  id                String   @id @default(uuid())
+  productId          String   @unique
+  product            Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  originCountry      String?
+  ingredients        String?
+  preparationMethod  String?
+  shortStory         String?
+  history            String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+model Mood {
+  id          String        @id @default(uuid())
+  key         String        @unique
+  title       String
+  icon        String?
+  description String?
+  sortOrder   Int           @default(0)
+  isActive    Boolean       @default(true)
+  products    ProductMood[]
+}
+
+model ProductMood {
+  id        String  @id @default(uuid())
+  productId String
+  moodId    String
+  weight    Int     @default(1)
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  mood      Mood    @relation(fields: [moodId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, moodId])
+}
+
+model ProductRecommendation {
+  id                   String   @id @default(uuid())
+  cafeId                String
+  productId             String
+  recommendedProductId  String
+  reason                String?
+  sortOrder             Int      @default(0)
+  isActive              Boolean  @default(true)
+  cafe                  Cafe     @relation(fields: [cafeId], references: [id], onDelete: Cascade)
+  product               Product  @relation("ProductRecommendations", fields: [productId], references: [id], onDelete: Cascade)
+  recommendedProduct    Product  @relation("RecommendedProducts", fields: [recommendedProductId], references: [id], onDelete: Cascade)
+  createdAt             DateTime @default(now())
+}
+
+model QrCode {
+  id          String           @id @default(uuid())
+  cafeId      String
+  cafe        Cafe             @relation(fields: [cafeId], references: [id], onDelete: Cascade)
+  code        String           @unique
+  type        String           @default("cafe")
+  targetUrl   String
+  scanCount   Int              @default(0)
+  isActive    Boolean          @default(true)
+  events      AnalyticsEvent[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+}
+
+model VisitorSession {
+  id          String           @id @default(uuid())
+  anonymousId String
+  cafeId      String?
+  userAgent   String?
+  deviceType  String?
+  referrer    String?
+  events      AnalyticsEvent[]
+  firstSeenAt DateTime         @default(now())
+  lastSeenAt  DateTime         @default(now())
+}
+
+model AnalyticsEvent {
+  id          String          @id @default(uuid())
+  cafeId      String
+  productId   String?
+  categoryId  String?
+  qrCodeId    String?
+  sessionId   String?
+  eventType   String
+  metadata    Json            @default("{}")
+  cafe        Cafe            @relation(fields: [cafeId], references: [id], onDelete: Cascade)
+  product     Product?        @relation(fields: [productId], references: [id], onDelete: SetNull)
+  qrCode      QrCode?         @relation(fields: [qrCodeId], references: [id], onDelete: SetNull)
+  session     VisitorSession? @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+  createdAt   DateTime        @default(now())
+
+  @@index([cafeId, createdAt])
+  @@index([eventType, createdAt])
+}
+
+model Plan {
+  id                    String         @id @default(uuid())
+  name                  String
+  key                   String         @unique
+  monthlyPrice          Int            @default(0)
+  yearlyPrice           Int            @default(0)
+  maxProducts           Int            @default(50)
+  maxCafes              Int            @default(1)
+  maxTables             Int            @default(0)
+  enableMoodMenu        Boolean        @default(false)
+  enableRecommendations Boolean        @default(false)
+  enableAnalytics       Boolean        @default(true)
+  enableCustomTheme     Boolean        @default(false)
+  isActive              Boolean        @default(true)
+  subscriptions         Subscription[]
+  createdAt             DateTime       @default(now())
+}
+
+model Subscription {
+  id            String             @id @default(uuid())
+  cafeId         String
+  planId         String
+  status         SubscriptionStatus @default(TRIAL)
+  startsAt       DateTime           @default(now())
+  endsAt         DateTime?
+  paymentStatus  String             @default("unpaid")
+  renewalType    String             @default("manual")
+  cafe           Cafe               @relation(fields: [cafeId], references: [id], onDelete: Cascade)
+  plan           Plan               @relation(fields: [planId], references: [id])
+  payments       Payment[]
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+}
+
+model Payment {
+  id             String        @id @default(uuid())
+  cafeId          String
+  subscriptionId  String?
+  actorId         String?
+  amount          Int
+  currency        String        @default("IRT")
+  method          String        @default("manual")
+  status          String        @default("pending")
+  trackingCode    String?
+  paidAt          DateTime?
+  cafe            Cafe          @relation(fields: [cafeId], references: [id], onDelete: Cascade)
+  subscription    Subscription? @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
+  actor           User?         @relation(fields: [actorId], references: [id], onDelete: SetNull)
+  createdAt       DateTime      @default(now())
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  actorId    String?
+  cafeId     String?
+  action     String
+  entityType String
+  entityId   String?
+  oldValue   Json?
+  newValue   Json?
+  createdAt  DateTime @default(now())
+}
