@@ -134,6 +134,4 @@ Monthly: 2M - 4M Toman
 
 ## MVP Build Rule
 
-The first version should look premium, load fast, and be easy to manage.
-
-Do not add features just because they sound clever. Clever features are how products become museums of unfinished ambition.
+The first version should look premium, load fast, and be easy to manage. New features should be added only after they support validation, sales, or operational reliability.
