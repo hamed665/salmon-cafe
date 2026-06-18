@@ -3,47 +3,49 @@
 ## Local Setup
 
 ```bash
+cp package.selfhost.json package.json
 npm install
 cp .env.example .env.local
 npm run dev
 ```
 
-## Required Environment Variables
-
-```txt
-NEXT_PUBLIC_SUPABASE_URL
-NEXT_PUBLIC_SUPABASE_ANON_KEY
-SUPABASE_SERVICE_ROLE_KEY
-NEXT_PUBLIC_APP_URL
-```
-
-## Vercel Deployment
-
-1. Import the repository into Vercel.
-2. Add the environment variables.
-3. Connect the Supabase project.
-4. Deploy the `main` branch.
-
-## Supabase Setup
-
-Run migrations from the Supabase CLI:
+## Docker Setup
 
 ```bash
-supabase db reset
+cp .env.docker.example .env.docker
+docker compose up -d --build
+docker compose exec app npm run db:push
 ```
 
-For production, apply migrations through the normal Supabase workflow.
+## Environment Variables
 
-## MVP Launch Checklist
+```txt
+NEXT_PUBLIC_APP_URL
+DATABASE_URL
+```
 
-- Create Supabase project
-- Add env vars to Vercel
-- Run database migration
-- Create first admin user
-- Create first demo cafe
-- Upload cafe logo and cover
-- Add products and categories
-- Generate QR code
-- Test `/m/cafe-noir`
-- Test `/q/demo-cafe-noir`
-- Test mobile layout on iPhone and Android
+## Production Target
+
+```txt
+VPS
+Docker Compose
+PostgreSQL
+Nginx
+SSL
+```
+
+## Checklist
+
+- Prepare VPS
+- Point domain to server
+- Install Docker
+- Clone repository
+- Configure environment file
+- Run Docker Compose
+- Run database setup
+- Create admin user
+- Add first cafe
+- Add products
+- Test public menu
+- Test dashboard
+- Test QR redirect
