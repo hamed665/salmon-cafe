@@ -44,33 +44,34 @@ model User {
 }
 
 model Cafe {
-  id            String         @id @default(uuid())
-  ownerId       String
-  owner         User           @relation("CafeOwner", fields: [ownerId], references: [id], onDelete: Cascade)
-  name          String
-  slug          String         @unique
-  description   String?
-  logoUrl       String?
-  coverUrl      String?
-  phone         String?
-  instagramUrl  String?
-  websiteUrl    String?
-  address       String?
-  city          String?
-  area          String?
-  status        CafeStatus     @default(DRAFT)
-  isPublished   Boolean        @default(false)
-  defaultLocale String         @default("fa-IR")
-  members       CafeMember[]
-  settings      CafeSettings?
-  categories    Category[]
-  products      Product[]
-  qrCodes       QrCode[]
-  events        AnalyticsEvent[]
-  subscriptions Subscription[]
-  payments      Payment[]
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  id                     String                  @id @default(uuid())
+  ownerId                String
+  owner                  User                    @relation("CafeOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  name                   String
+  slug                   String                  @unique
+  description            String?
+  logoUrl                String?
+  coverUrl               String?
+  phone                  String?
+  instagramUrl           String?
+  websiteUrl             String?
+  address                String?
+  city                   String?
+  area                   String?
+  status                 CafeStatus              @default(DRAFT)
+  isPublished            Boolean                 @default(false)
+  defaultLocale          String                  @default("fa-IR")
+  members                CafeMember[]
+  settings               CafeSettings?
+  categories             Category[]
+  products               Product[]
+  productRecommendations ProductRecommendation[]
+  qrCodes                QrCode[]
+  events                 AnalyticsEvent[]
+  subscriptions          Subscription[]
+  payments               Payment[]
+  createdAt              DateTime                @default(now())
+  updatedAt              DateTime                @updatedAt
 }
 
 model CafeMember {
