@@ -6,7 +6,7 @@ services:
     container_name: salmon-cafe-app
     restart: unless-stopped
     env_file:
-      - .env.production
+      - .env.docker
     ports:
       - "3000:3000"
     depends_on:
@@ -19,7 +19,7 @@ services:
     environment:
       POSTGRES_DB: salmon_cafe
       POSTGRES_USER: salmon_cafe
-      POSTGRES_PASSWORD: change_me_in_production
+      POSTGRES_PASSWORD: salmon_cafe
     volumes:
       - salmon_cafe_pgdata:/var/lib/postgresql/data
     ports:
