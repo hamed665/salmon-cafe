@@ -4,7 +4,7 @@
 
 Salmon Cafe is a Persian-first, premium, responsive smart cafe menu platform for the Iran market.
 
-The architecture has three hard priorities:
+The architecture has three priorities:
 
 1. **Responsive premium UI** for mobile QR customers.
 2. **Strong multi-tenant database** for cafes, products, QR, analytics, and subscription control.
@@ -55,18 +55,16 @@ Vercel
 Cloudflare DNS later
 ```
 
-## Why Not NestJS in MVP?
+## MVP Backend Strategy
 
-NestJS, Redis, Docker, MinIO, workers, queues, and separate backend services are useful later. For the MVP they add weight before revenue.
-
-MVP should ship as a **Next.js full-stack monolith**:
+The MVP should ship as a **Next.js full-stack monolith**:
 
 - Server Components for public menu pages
 - Server Actions for dashboard mutations
 - Route Handlers for QR redirect and analytics
 - Supabase for auth, database, storage, and RLS
 
-This gives enough structure without building a tiny space agency for a coffee menu. Humanity has suffered enough dashboards.
+A separate backend can be introduced after sales validation and production load requirements are clear.
 
 ## Application Routes
 
@@ -107,7 +105,7 @@ This gives enough structure without building a tiny space agency for a coffee me
 
 ## Core Modules
 
-### 1. Public Cafe Experience
+### Public Cafe Experience
 
 - Cafe hero
 - Logo and cover
@@ -122,7 +120,7 @@ This gives enough structure without building a tiny space agency for a coffee me
 - Manual recommendations
 - Popular products
 
-### 2. Cafe Dashboard
+### Cafe Dashboard
 
 - Cafe profile setup
 - Logo/cover upload
@@ -132,7 +130,7 @@ This gives enough structure without building a tiny space agency for a coffee me
 - QR preview/download
 - Basic analytics
 
-### 3. Admin Panel
+### Admin Panel
 
 - Cafe list
 - Subscription control
@@ -141,7 +139,7 @@ This gives enough structure without building a tiny space agency for a coffee me
 - Plan assignment
 - Audit log inspection later
 
-### 4. QR and Analytics
+### QR and Analytics
 
 - QR redirect route
 - Anonymous session
@@ -166,7 +164,7 @@ The root layout must use:
 - Large product imagery
 - Sticky category navigation
 - Minimal text density
-- Strong call-to-actions
+- Strong calls to action
 - Fast loading on weak mobile internet
 
 ### Breakpoints
@@ -183,7 +181,7 @@ The root layout must use:
 
 ## Data Architecture
 
-Every tenant-owned table must include `cafe_id`.
+Every tenant-owned table should include `cafe_id`.
 
 Important tables:
 
@@ -218,7 +216,7 @@ Published cafes, active categories, and active products are publicly readable.
 
 ### Owner Access
 
-Cafe owners can only manage records that belong to cafes where they are owner/member.
+Cafe owners can manage records that belong to cafes where they are owner/member.
 
 ### Admin Access
 
@@ -233,8 +231,6 @@ Platform admins can manage all cafes and subscriptions.
 - Rate limiting on analytics endpoint later
 
 ## Performance Model
-
-Public menu pages must be fast.
 
 Targets:
 
@@ -255,7 +251,7 @@ Techniques:
 
 ## Future Split Points
 
-Only after real customers and revenue:
+After real customer validation:
 
 ```txt
 Backend API -> NestJS
@@ -271,4 +267,4 @@ Payments -> payment gateway integration
 
 Do not build online ordering, online payment, real AI, loyalty, games, or POS integration in the first version.
 
-The MVP exists to sell the premium QR experience first. Everything else is a future feature trying to sneak into the party wearing a fake mustache.
+The MVP exists to validate the premium QR experience first.
