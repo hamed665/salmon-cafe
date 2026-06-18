@@ -2,7 +2,7 @@
 
 Salmon Cafe is a Persian-first premium smart QR menu and cafe experience platform for the Iran market.
 
-The MVP is intentionally focused: a fast, responsive, mobile-first cafe menu with QR access, premium visual design, basic analytics, product stories, taste profiles, mood-based browsing, and a simple cafe owner dashboard.
+The MVP is focused on a fast, responsive, mobile-first cafe menu with QR access, premium visual design, basic analytics, product stories, taste profiles, mood-based browsing, and a simple cafe owner dashboard.
 
 ## Product Positioning
 
@@ -14,30 +14,18 @@ Salmon Cafe is positioned as a **Premium Smart Cafe Menu** for cafes that care a
 - Direction: RTL
 - Currency: Toman
 - Public URLs: Latin slugs
-- Multi-language support: excluded from MVP, prepared for future architecture only
+- Multi-language support: excluded from MVP
 
 ## Tech Stack
 
 - Next.js App Router
 - TypeScript
 - Tailwind CSS
-- shadcn-style components
-- Supabase Auth
-- Supabase PostgreSQL
-- Supabase Storage
-- Row Level Security
-- Vercel deployment
-
-## Main Areas
-
-```txt
-Public customer experience
-Cafe owner dashboard
-Platform admin panel
-QR redirect and analytics
-Supabase database schema
-Codex-ready development phases
-```
+- PostgreSQL
+- Prisma
+- Docker Compose
+- Nginx reverse proxy
+- VPS self-host deployment
 
 ## Quick Start
 
@@ -47,13 +35,21 @@ cp .env.example .env.local
 npm run dev
 ```
 
-Then open:
+Open:
 
 ```txt
 http://localhost:3000
 http://localhost:3000/m/cafe-noir
 http://localhost:3000/dashboard
 http://localhost:3000/admin
+```
+
+## Self-Host Docker Start
+
+```bash
+cp .env.docker.example .env.docker
+docker compose up -d --build
+docker compose exec app npm run db:push
 ```
 
 ## Documentation
@@ -64,10 +60,12 @@ http://localhost:3000/admin
 - `DATABASE_SCHEMA.md`
 - `CODEX_PROMPTS.md`
 - `DEPLOYMENT.md`
+- `HOSTING_HANDOFF.md`
+- `HANDOFF_IRAN.md`
 
 ## MVP Exclusions
 
-The following are deliberately excluded from the first build:
+The following are excluded from the first build:
 
 - Online ordering
 - Online payment
