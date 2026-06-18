@@ -5,7 +5,6 @@ import { cn } from "@/lib/utils";
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: "primary" | "secondary" | "ghost";
   size?: "sm" | "md" | "lg";
-  asChild?: boolean;
   href?: string;
   children: ReactNode;
 };
@@ -22,7 +21,7 @@ const sizes = {
   lg: "h-12 px-6 text-base"
 };
 
-export function Button({ className, variant = "primary", size = "md", asChild, href, children, ...props }: ButtonProps) {
+export function Button({ className, variant = "primary", size = "md", href, children, ...props }: ButtonProps) {
   const classes = cn(
     "inline-flex items-center justify-center gap-2 rounded-2xl font-bold transition focus:outline-none focus:ring-2 focus:ring-gold-400/50 disabled:pointer-events-none disabled:opacity-60",
     variants[variant],
@@ -30,7 +29,7 @@ export function Button({ className, variant = "primary", size = "md", asChild, h
     className
   );
 
-  if (asChild && href) {
+  if (href) {
     return (
       <Link href={href} className={classes}>
         {children}
