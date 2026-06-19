@@ -7,30 +7,6 @@ export async function getPublishedCafeBySlug(slug: string) {
       slug,
       status: CafeStatus.ACTIVE,
       isPublished: true
-    },
-    include: {
-      settings: true,
-      categories: {
-        where: { isActive: true },
-        orderBy: { sortOrder: "asc" }
-      },
-      products: {
-        where: { isActive: true },
-        orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
-        include: {
-          profile: true,
-          story: true,
-          moods: { include: { mood: true } },
-          recommendations: {
-            where: { isActive: true },
-            include: { recommendedProduct: { include: { profile: true, story: true } } },
-            orderBy: { sortOrder: "asc" }
-          }
-        }
-      },
-      qrCodes: {
-        where: { isActive: true }
-      }
     }
   });
 }
@@ -44,18 +20,6 @@ export async function getPublishedProductBySlug(cafeSlug: string, productSlug: s
         slug: cafeSlug,
         status: CafeStatus.ACTIVE,
         isPublished: true
-      }
-    },
-    include: {
-      cafe: true,
-      category: true,
-      profile: true,
-      story: true,
-      moods: { include: { mood: true } },
-      recommendations: {
-        where: { isActive: true },
-        include: { recommendedProduct: { include: { profile: true, story: true } } },
-        orderBy: { sortOrder: "asc" }
       }
     }
   });
