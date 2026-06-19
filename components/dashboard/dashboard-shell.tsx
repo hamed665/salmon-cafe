@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { BarChart3, Coffee, LayoutDashboard, QrCode, Settings, Shield } from "lucide-react";
+import { BarChart3, Coffee, LayoutDashboard, LogOut, QrCode, Settings, Shield } from "lucide-react";
+import { logoutAction } from "@/lib/auth/actions";
 
 const dashboardItems = [
   { href: "/dashboard", label: "داشبورد", icon: LayoutDashboard },
@@ -9,9 +10,21 @@ const dashboardItems = [
   { href: "/dashboard/analytics", label: "آمار", icon: BarChart3 }
 ];
 
-const adminItems = [{ href: "/admin", label: "ادمین", icon: Shield }];
+const adminItems = [
+  { href: "/admin", label: "ادمین", icon: Shield },
+  { href: "/dashboard", label: "پنل کافه", icon: LayoutDashboard }
+];
 
-export function DashboardShell({ children, admin = false }: { children: React.ReactNode; admin?: boolean }) {
+type DashboardShellProps = {
+  children: React.ReactNode;
+  admin?: boolean;
+  user?: {
+    email: string;
+    fullName: string | null;
+  };
+};
+
+export function DashboardShell({ children, admin = false, user }: DashboardShellProps) {
   const items = admin ? adminItems : dashboardItems;
 
   return (
@@ -21,6 +34,7 @@ export function DashboardShell({ children, admin = false }: { children: React.Re
           <div className="mb-6 rounded-2xl bg-gold-400/12 p-4">
             <p className="text-sm text-coffee-100/70">Salmon Cafe</p>
             <h1 className="mt-1 text-xl font-black">{admin ? "پنل ادمین" : "پنل کافه"}</h1>
+            {user ? <p className="mt-2 truncate text-xs text-coffee-100/60">{user.fullName || user.email}</p> : null}
           </div>
           <nav className="space-y-2">
             {items.map((item) => (
@@ -30,6 +44,11 @@ export function DashboardShell({ children, admin = false }: { children: React.Re
               </Link>
             ))}
           </nav>
+          <form action={logoutAction} className="mt-6">
+            <button className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold text-coffee-100/70 transition hover:bg-red-500/10 hover:text-red-100">
+              <LogOut className="h-5 w-5" /> خروج
+            </button>
+          </form>
         </aside>
         <section>{children}</section>
       </div>
