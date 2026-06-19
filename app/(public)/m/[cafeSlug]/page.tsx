@@ -3,11 +3,7 @@ import { CafeHero } from "@/components/public-menu/cafe-hero";
 import { CafeMenuClient } from "@/components/public-menu/cafe-menu-client";
 import { demoCategories, getCafeBySlug, getProductsByCafe } from "@/lib/demo-data";
 
-type PageProps = {
-  params: Promise<{ cafeSlug: string }>;
-};
-
-export default async function PublicCafePage({ params }: PageProps) {
+export default async function PublicCafePage({ params }: { params: Promise<{ cafeSlug: string }> }) {
   const { cafeSlug } = await params;
   const cafe = getCafeBySlug(cafeSlug);
 

@@ -6,6 +6,7 @@
 cp package.selfhost.json package.json
 npm install
 cp .env.example .env.local
+npm run db:generate
 npm run dev
 ```
 
@@ -15,6 +16,7 @@ npm run dev
 cp .env.docker.example .env.docker
 docker compose up -d --build
 docker compose exec app npm run db:push
+docker compose exec app npm run db:seed
 ```
 
 ## Environment Variables
@@ -43,9 +45,7 @@ SSL
 - Configure environment file
 - Run Docker Compose
 - Run database setup
-- Create admin user
-- Add first cafe
-- Add products
+- Run seed for initial admin, cafe, plans, moods, products, QR, and analytics data
 - Test public menu
 - Test dashboard
 - Test QR redirect
