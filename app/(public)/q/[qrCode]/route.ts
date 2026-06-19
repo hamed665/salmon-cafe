@@ -5,6 +5,21 @@ import { trackPublicEvent } from "@/lib/public-menu/analytics";
 
 export const dynamic = "force-dynamic";
 
+function getPublicBaseUrl(request: NextRequest) {
+  return process.env.NEXT_PUBLIC_APP_URL || request.nextUrl.origin || "http://localhost:3000";
+}
+
+function getSafeTargetPath(targetUrl: string | null | undefined, fallbackSlug: string) {
+  if (!targetUrl) return `/m/${fallbackSlug}`;
+
+  try {
+    const parsed = new URL(targetUrl);
+    return `${parsed.pathname}${parsed.search}`;
+  } catch {
+    return targetUrl.startsWith("/") ? targetUrl : `/m/${fallbackSlug}`;
+  }
+}
+
 export async function GET(request: NextRequest, { params }: { params: Promise<{ qrCode: string }> }) {
   const { qrCode } = await params;
 
@@ -14,7 +29,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
   });
 
   if (!qr) {
-    return NextResponse.redirect(new URL("/", request.url));
+    return NextResponse.redirect(new URL("/", getPublicBaseUrl(request)));
   }
 
   await database.qrCode.update({ where: { id: qr.id }, data: { scanCount: { increment: 1 } } });
@@ -23,8 +38,8 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     await trackPublicEvent({ cafeId: qr.cafeId, qrCodeId: qr.id, eventType: "qr_scan", metadata: { code: qr.code } });
   }
 
-  const targetPath = qr.targetUrl || `/m/${qr.cafe.slug}`;
-  const url = new URL(targetPath, request.url);
+  const targetPath = getSafeTargetPath(qr.targetUrl, qr.cafe.slug);
+  const url = new URL(targetPath, getPublicBaseUrl(request));
   url.searchParams.set("source", "qr");
   url.searchParams.set("code", qr.code);
 
