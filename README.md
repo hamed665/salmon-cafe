@@ -33,6 +33,7 @@ Salmon Cafe is positioned as a **Premium Smart Cafe Menu** for cafes that care a
 cp package.selfhost.json package.json
 npm install
 cp .env.example .env.local
+npm run db:generate
 npm run dev
 ```
 
@@ -51,7 +52,24 @@ http://localhost:3000/admin
 cp .env.docker.example .env.docker
 docker compose up -d --build
 docker compose exec app npm run db:push
+docker compose exec app npm run db:seed
 ```
+
+## Database Seed
+
+The seed creates:
+
+- Platform admin user
+- Cafe owner user
+- Demo cafe: `cafe-noir`
+- Starter, Pro, and Premium plans
+- Mood menu values
+- Demo categories and products
+- Product taste profiles
+- Product stories
+- Product recommendations
+- Demo QR code
+- Demo subscription, payment, and analytics events
 
 ## Documentation
 
