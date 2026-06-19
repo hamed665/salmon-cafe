@@ -9,7 +9,8 @@
     "typecheck": "tsc --noEmit",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
-    "db:migrate": "prisma migrate deploy"
+    "db:migrate": "prisma migrate deploy",
+    "db:seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
     "@prisma/client": "latest",
@@ -32,6 +33,7 @@
     "postcss": "latest",
     "prisma": "latest",
     "tailwindcss": "^3.4.0",
+    "tsx": "latest",
     "typescript": "latest"
   }
 }
