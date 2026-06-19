@@ -6,6 +6,7 @@ RUN npm install
 FROM node:20-alpine AS builder
 WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV DATABASE_URL=postgresql://salmon_cafe:salmon_cafe@db:5432/salmon_cafe
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN npm run db:generate
