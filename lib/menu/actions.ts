@@ -77,17 +77,42 @@ export async function archiveCategoryAction(formData: FormData) {
 }
 
 async function writeProductRelations(productId: string, cafeId: string, formData: FormData) {
-  const moodIds = formData.getAll("moodIds").map(String).filter(Boolean);
-  const recommendedIds = formData.getAll("recommendedProductIds").map(String).filter((id) => id && id !== productId);
+  const rawMoodIds = formData.getAll("moodIds").map(String).filter(Boolean);
+  const rawRecommendedIds = formData.getAll("recommendedProductIds").map(String).filter((id) => id && id !== productId);
 
   await database.productMood.deleteMany({ where: { productId } });
-  for (const moodId of moodIds) {
-    await database.productMood.create({ data: { productId, moodId, weight: 1 } });
+
+  if (rawMoodIds.length > 0) {
+    const moods = await database.mood.findMany({
+      where: { id: { in: rawMoodIds }, isActive: true },
+      select: { id: true }
+    });
+
+    for (const mood of moods) {
+      await database.productMood.create({ data: { productId, moodId: mood.id, weight: 1 } });
+    }
   }
 
   await database.productRecommendation.deleteMany({ where: { cafeId, productId } });
-  for (const [index, recommendedProductId] of recommendedIds.entries()) {
-    await database.productRecommendation.create({ data: { cafeId, productId, recommendedProductId, reason: "پیشنهاد مکمل", sortOrder: index + 1, isActive: true } });
+
+  if (rawRecommendedIds.length > 0) {
+    const recommendedProducts = await database.product.findMany({
+      where: { cafeId, id: { in: rawRecommendedIds }, isActive: true },
+      select: { id: true }
+    });
+
+    for (const [index, recommendedProduct] of recommendedProducts.entries()) {
+      await database.productRecommendation.create({
+        data: {
+          cafeId,
+          productId,
+          recommendedProductId: recommendedProduct.id,
+          reason: "پیشنهاد مکمل",
+          sortOrder: index + 1,
+          isActive: true
+        }
+      });
+    }
   }
 }
 
