@@ -23,6 +23,7 @@ Salmon Cafe is positioned as a **Premium Smart Cafe Menu** for cafes that care a
 - Tailwind CSS
 - PostgreSQL
 - Prisma
+- Internal credentials auth
 - Docker Compose
 - Nginx reverse proxy
 - VPS self-host deployment
@@ -55,6 +56,16 @@ docker compose exec app npm run db:push
 docker compose exec app npm run db:seed
 ```
 
+## Admin User
+
+After database setup, create or update a platform admin user:
+
+```bash
+npm run admin:create
+```
+
+The script reads admin email, name, and password from environment variables.
+
 ## Database Seed
 
 The seed creates:
@@ -81,6 +92,7 @@ The seed creates:
 - `DEPLOYMENT.md`
 - `HOSTING_HANDOFF.md`
 - `HANDOFF_IRAN.md`
+- `AUTH_HANDOFF.md`
 
 ## MVP Exclusions
 
