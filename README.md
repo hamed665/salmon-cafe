@@ -93,6 +93,7 @@ The seed creates:
 - `HOSTING_HANDOFF.md`
 - `HANDOFF_IRAN.md`
 - `AUTH_HANDOFF.md`
+- `PHASE_4_CAFE_DASHBOARD.md`
 
 ## MVP Exclusions
 

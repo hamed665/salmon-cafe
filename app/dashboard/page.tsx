@@ -1,20 +1,42 @@
+import Link from "next/link";
 import { BarChart3, Coffee, Eye, QrCode } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { formatToman } from "@/lib/format";
+import { requireCafeUser } from "@/lib/auth/guards";
+import { database } from "@/lib/database/client";
+import { getManageableCafes } from "@/lib/cafes/queries";
 
-const stats = [
-  { title: "بازدید امروز", value: "۱,۲۴۸", icon: Eye },
-  { title: "اسکن QR", value: "۸۵۶", icon: QrCode },
-  { title: "محصول فعال", value: "۳۲", icon: Coffee },
-  { title: "درآمد قابل انتساب", value: formatToman(12400000), icon: BarChart3 }
-];
+export default async function DashboardPage() {
+  const user = await requireCafeUser();
+  const cafes = await getManageableCafes(user);
+  const primaryCafe = cafes[0] ?? null;
 
-export default function DashboardPage() {
+  const productCount = primaryCafe
+    ? await database.product.count({ where: { cafeId: primaryCafe.id, isActive: true } })
+    : 0;
+
+  const qrCount = primaryCafe
+    ? await database.qrCode.count({ where: { cafeId: primaryCafe.id, isActive: true } })
+    : 0;
+
+  const eventCount = primaryCafe
+    ? await database.analyticsEvent.count({ where: { cafeId: primaryCafe.id } })
+    : 0;
+
+  const stats = [
+    { title: "کافه‌های قابل مدیریت", value: cafes.length.toLocaleString("fa-IR"), icon: Coffee },
+    { title: "محصول فعال", value: productCount.toLocaleString("fa-IR"), icon: Eye },
+    { title: "QR فعال", value: qrCount.toLocaleString("fa-IR"), icon: QrCode },
+    { title: "رویداد ثبت‌شده", value: eventCount.toLocaleString("fa-IR"), icon: BarChart3 }
+  ];
+
   return (
     <div className="space-y-6">
       <div>
         <p className="text-sm text-coffee-100/60">خلاصه وضعیت</p>
         <h1 className="mt-2 text-3xl font-black">داشبورد کافه</h1>
+        <p className="mt-2 text-sm text-coffee-100/60">
+          {primaryCafe ? `در حال مدیریت: ${primaryCafe.name}` : "هنوز کافه‌ای ساخته نشده است."}
+        </p>
       </div>
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {stats.map((stat) => (
@@ -34,9 +56,9 @@ export default function DashboardPage() {
           <CardTitle>اقدام‌های سریع</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-3 md:grid-cols-3">
-          <div className="rounded-2xl bg-coffee-900/45 p-4">افزودن محصول جدید</div>
-          <div className="rounded-2xl bg-coffee-900/45 p-4">دریافت QR کافه</div>
-          <div className="rounded-2xl bg-coffee-900/45 p-4">دیدن آمار محصولات</div>
+          <Link href="/dashboard/cafe" className="rounded-2xl bg-coffee-900/45 p-4 transition hover:bg-coffee-800">ساخت یا ویرایش کافه</Link>
+          <Link href="/dashboard/menu/products" className="rounded-2xl bg-coffee-900/45 p-4 transition hover:bg-coffee-800">مدیریت محصولات</Link>
+          <Link href="/dashboard/qr" className="rounded-2xl bg-coffee-900/45 p-4 transition hover:bg-coffee-800">دریافت QR کافه</Link>
         </CardContent>
       </Card>
     </div>
